@@ -1,4 +1,4 @@
-# azmuth.inkmotion.art
+# author-page.inkmotion.art
 
 John Azmuth's writing page. It shows a short bio, a Chapter 1 preview of the novel *Hole Attic* in a scrolling reader, and a way for readers to request a code that unlocks the full novel and the PDF download.
 
@@ -7,7 +7,9 @@ This is a separate GitHub repo from `inkmotion-art`. The main site (inkmotion.ar
 ## Files
 
 ```
-index.html                      the whole page (bio, reader, forms)
+index.html                      the whole page (bio, photo, reader, forms)
+avatar-blackbar-square.webp     photo beside the bio (542 KB, what the page actually loads)
+avatar-blackbar-square.png      same photo, 3 MB, only a fallback for very old browsers
 books/
   hole-attic-chapter-1.pdf      public preview, anyone can read it
   hole-attic.enc                the full novel, locked (unreadable without the code)
@@ -20,13 +22,12 @@ Kept on your own computer, NOT in this repo:
 
 ## Go live (one time)
 
-##1. Create a new **public** GitHub repo (for example `azmuth-site`) Upload `index.html`, `README.md`, and the `books` folder.
-1. Create a new **public** GitHub repo ('author-page'). Upload `index.html`, `README.md`, and the `books` folder.
+1. Create a new **public** GitHub repo (for example `azmuth-site`). Upload `index.html`, `README.md`, and the `books` folder.
 2. In GoDaddy DNS for inkmotion.art, add one record. Leave all existing records alone.
    - Type: CNAME
-   - Name: `azmuth`
+   - Name: `author-page`
    - Value: `dazmuth.github.io`
-3. In the new repo: Settings, then Pages. Deploy from branch `main`, folder `/ (root)`. Under Custom domain, enter `azmuth.inkmotion.art` and save.
+3. In the new repo: Settings, then Pages. Deploy from branch `main`, folder `/ (root)`. Under Custom domain, enter `author-page.inkmotion.art` and save.
 4. Wait for the DNS check to pass (up to an hour), then tick **Enforce HTTPS**.
 
 Your inkmotion.art domain is already verified on your GitHub account, which should cover subdomains like this one.
@@ -46,6 +47,7 @@ Never upload the original full PDF to this repo. GitHub keeps deleted files in i
 To change the code later, lock the book again and upload the new `.enc`. The old code stops working once the new file is live. Readers who saved the old code get cleared automatically and are asked for the new one.
 
 ## Sending a reader their code
+## KRISIUNBRAZIL666
 
 Requests arrive in the Formspree dashboard (source: `azmuth-code-request`). Reply from your own email. A link with the code in it unlocks the book with one click:
 
@@ -54,7 +56,7 @@ Hi, thanks for reading Hole Attic. Here is your code:
 
 XXXX-XXXX-XXXX-XXXX
 
-Or just click: https://azmuth.inkmotion.art/?code=XXXX-XXXX-XXXX-XXXX
+Or just click: https://author-page.inkmotion.art/?code=XXXX-XXXX-XXXX-XXXX
 
 Enjoy the story.
 John
@@ -62,7 +64,9 @@ John
 
 ## Editing the page
 
-- **Bio:** in `index.html`, find the comment `PLACEHOLDER BIO` and replace the five sentences below it.
+- **Bio:** in `index.html`, find `<p class="bio">` and replace the text inside it.
+- **Photo:** the photo sits beside the bio and is stretched to match the bio's height. To swap it, upload a new image with the same file name (keep it square). On phones the photo moves above the text.
+- **"Get a code to read the rest" button:** scrolls to the request form, flashes it, and puts the cursor in the email box.
 - **Book name or file names:** edit the `BOOK` block near the top of the script at the bottom of `index.html`.
 - **Formspree form:** both forms on the site post to `https://formspree.io/f/xvzynkqe`. The hidden `source` field tells you which page a signup came from.
 

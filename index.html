@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>John Azmuth — Novels &amp; Screenplays</title>
 <meta name="description" content="Novels and screenplays by John Azmuth. Read Chapter 1 of Hole Attic free.">
+<link rel="preload" as="image" href="avatar-blackbar-square.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Newsreader:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -59,7 +60,28 @@
     letter-spacing: -0.02em;
   }
 
-  .bio { max-width: 44rem; margin-top: 1.6rem; font-size: 1.25rem; color: var(--ink-soft); }
+  /* Bio text on the left, photo on the right. The photo is stretched to the same height as the text. */
+  .profile {
+    --avatar-w: clamp(10rem, 30vw, 17rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--avatar-w);
+    gap: 2rem;
+    align-items: stretch;
+    margin-top: 1.6rem;
+  }
+  .bio { font-size: clamp(1.1rem, 0.53rem + 1.2vw, 1.25rem); color: var(--ink-soft); }
+  .avatar { position: relative; display: block; min-height: 10rem; }
+  .avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 40%;
+    border-radius: 8px;
+    box-shadow: 0 16px 30px -20px rgba(0, 0, 0, 0.6);
+    background: var(--paper-deep);
+  }
 
   /* ---------- Book section ---------- */
   main { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
@@ -256,7 +278,21 @@
   }
   footer a { color: var(--ink-soft); }
 
+  /* Brief highlight when "Get a code" is pressed, so the click is visible */
+  .unlock.flash { animation: flash 1.6s ease; }
+  @keyframes flash {
+    0%   { box-shadow: 0 0 0 0 rgba(166, 63, 34, 0.6); }
+    25%  { box-shadow: 0 0 0 9px rgba(166, 63, 34, 0.35); background: #f0d9c9; }
+    100% { box-shadow: 0 0 0 0 rgba(166, 63, 34, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .unlock.flash { animation: none; } }
+
   @media (max-width: 760px) { .unlock-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    /* On tablets and phones the photo goes above the text instead of beside it */
+    .profile { grid-template-columns: 1fr; gap: 1.25rem; }
+    .avatar { order: -1; width: 11rem; height: 11rem; min-height: 0; }
+  }
   @media (max-width: 480px) {
     .row { flex-direction: column; }
     .toolbar { flex-wrap: wrap; }
@@ -269,8 +305,14 @@
 <header class="masthead">
   <p class="kicker">Novels &amp; screenplays</p>
   <h1>John Azmuth</h1>
-  <!-- PLACEHOLDER BIO: replace these five sentences with your own. -->
-  <p class="bio">John Azmuth is a writer of novels and screenplays. He is drawn to ordinary places where something strange is waiting to be found. His stories begin with a character, a question, and a door that probably should stay closed. Hole Attic, a novel, begins below with Chapter 1 free to read. At the end of the preview, you can ask for a code to read the whole story.</p>
+  <div class="profile">
+    <p class="bio">Writer and creator of stories across all mediums, except painting and drawing because John can&rsquo;t draw pictures for shit. John is a disturbed man who loves to make people laugh or squirm with discomfort, preferably at the same time. Below is Chapter 1 from his latest novel, &ldquo;Hole Attic,&rdquo; a tale about sexual deviants and abortion rights, which somehow don&rsquo;t go together but perfectly go together too. Prepare to laugh and squirm! If you like it, ask for a code to read the whole disgusting and hilarious thing. Thanks for your attention, now please drive-thru.</p>
+    <!-- Photo: webp (542 KB) loads in every current browser; the 3 MB png is only a fallback for very old ones. -->
+    <picture class="avatar">
+      <source srcset="avatar-blackbar-square.webp" type="image/webp">
+      <img src="avatar-blackbar-square.png" width="1507" height="1507" alt="John Azmuth, close up, with a black bar across his eyes" decoding="async" fetchpriority="high">
+    </picture>
+  </div>
 </header>
 
 <main>
@@ -337,7 +379,7 @@
 </main>
 
 <footer>
-  <p>&copy; <span id="year">2026</span> John Azmuth &middot; Part of <a href="https://inkmotion.art">Inkmotion.art</a></p>
+  <p>&copy; <span id="year">2026</span> John Azmuth &middot; Part of <a href="https://inkmotion.art">Inkmotion.Art</a></p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
@@ -634,6 +676,22 @@
 
   els.lockBtn.addEventListener('click', lock);
 
+  /* "Get a code to read the rest": scroll to the request form, flash it, and put the cursor in the email box.
+     (Before this, the button only jumped to the form, which looked like nothing happened when the form was already on screen.) */
+  var getCode = els.end.querySelector('a');
+  if (getCode) {
+    getCode.addEventListener('click', function (e) {
+      e.preventDefault();
+      var box = $('#unlock');
+      box.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+      box.classList.remove('flash');
+      void box.offsetWidth;            // restart the animation if it was pressed before
+      box.classList.add('flash');
+      var email = $('#req-email');
+      if (email) { email.focus({ preventScroll: true }); }
+    });
+  }
+
   /* ---------- Request a code (Formspree) ---------- */
   els.request.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -664,7 +722,7 @@
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'build/pdf.worker.min.js';
     }
 
-    // A link like https://azmuth.inkmotion.art/?code=XXXX-XXXX-XXXX-XXXX unlocks automatically.
+    // A link like https://author-page.inkmotion.art/?code=XXXX-XXXX-XXXX-XXXX unlocks automatically.
     var urlCode = null;
     try { urlCode = new URLSearchParams(location.search).get('code'); } catch (e) {}
     if (urlCode) {
