@@ -177,6 +177,13 @@
       var isPdf = String.fromCharCode.apply(null, bytes.slice(0, 5)) === '%PDF-';
       if (isPdf) { show('That is a PDF. The website now reads epub files, so choose the .epub version of the book.', 'bad'); return; }
       if (!isZip) { show('That file doesn’t look like an epub.', 'bad'); return; }
+      // File names inside a zip are stored as plain text, so we can check this epub was made by make_book.py
+      // (it has OEBPS/ch01.xhtml). A raw Google Docs epub is one big document and would read as a single page.
+      var inside = new TextDecoder('latin1').decode(bytes);
+      if (inside.indexOf('OEBPS/ch01.xhtml') < 0) {
+        show('This epub comes straight from Google Docs, so the site would show it as one long page with no chapters or formatting. Run it through make_book.py first, then lock the epub that it makes. (See step 3 of the guide.) Nothing was saved.', 'bad');
+        return;
+      }
       var enc = await encrypt(bytes, codeEl.value);
       var good = await verify(enc, codeEl.value, bytes);
       if (!good) { show('Something went wrong while checking the locked file. Nothing was saved.', 'bad'); return; }
